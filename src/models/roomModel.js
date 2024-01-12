@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const roomSchema = new mongoose.Schema({
   roomId: { type: String, unique: true, required: true },
+  roomName: String,
   code: { type: String, default: "" },
 });
 
