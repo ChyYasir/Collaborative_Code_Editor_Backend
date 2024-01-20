@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt"; // Import the bcrypt library
+import bcrypt from "bcrypt";
 
 import User from "../models/userModel.js";
 import Room from "../models/roomModel.js";
@@ -96,9 +96,9 @@ export const getUserData = async (req, res) => {
   const { userId } = req.params;
   try {
     const user = await User.findById(userId).populate({
-      path: "roomIds", // This should match the field name in User schema
+      path: "roomIds",
       model: "Room",
-      select: "roomId roomName ", // These should match the field names in Room schema
+      select: "roomId roomName ",
     });
 
     if (!user) {
@@ -106,7 +106,7 @@ export const getUserData = async (req, res) => {
     }
     res.status(200).json({ user });
   } catch (error) {
-    console.error("Error in getUserData:", error); // Log the detailed error
+    console.error("Error in getUserData:", error);
     res.status(500).json({ error: error.message });
   }
 };

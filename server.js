@@ -8,6 +8,7 @@ import cors from "cors";
 import userRoutes from "./src/routes/userRoutes.js";
 import roomRoutes from "./src/routes/roomRoutes.js";
 import ACTIONS from "./src/Actions.js";
+import { saveChatMessage } from "./src/controllers/roomControllers.js";
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ io.on("connection", (socket) => {
   console.log("socket connected", socket.id);
 
   socket.on(ACTIONS.JOIN, ({ roomId, username }) => {
+    console.log(`${username} joined ${roomId}`);
     userSocketMap[socket.id] = username;
     socket.join(roomId);
     const clients = getAllConnectedClients(roomId);
@@ -70,6 +72,24 @@ io.on("connection", (socket) => {
     io.to(socketId).emit(ACTIONS.CODE_CHANGE, { code });
   });
 
+  socket.on(ACTIONS.SEND_MESSAGE, async ({ roomId, message, username }) => {
+    console.log("send message", roomId, message, username);
+    // Save the chat message
+    const success = await saveChatMessage({
+      roomId,
+      message,
+      username,
+    });
+    if (success) {
+      io.in(roomId).emit(ACTIONS.RECEIVE_MESSAGE, {
+        username,
+        message,
+      });
+    } else {
+      // Handle save failure (optional)
+      console.log("Failed to save message");
+    }
+  });
   socket.on("disconnecting", () => {
     const rooms = [...socket.rooms];
     rooms.forEach((roomId) => {
