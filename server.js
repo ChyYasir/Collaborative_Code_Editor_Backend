@@ -90,6 +90,12 @@ io.on("connection", (socket) => {
       console.log("Failed to save message");
     }
   });
+  socket.on(ACTIONS.TYPING, ({ roomId, username }) => {
+    console.log(username + " is typing...");
+    socket.to(roomId).emit(ACTIONS.TYPING, {
+      username,
+    });
+  });
   socket.on("disconnecting", () => {
     const rooms = [...socket.rooms];
     rooms.forEach((roomId) => {
